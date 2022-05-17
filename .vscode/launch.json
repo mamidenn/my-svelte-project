@@ -8,7 +8,14 @@
       "name": "Launch localhost",
       "url": "http://localhost:8080",
       "webRoot": "${workspaceFolder}/src",
-      "preLaunchTask": "npm: dev"
+      "preLaunchTask": "npm: dev",
+      "pathMappings": [
+        {
+          "url": "http://localhost:8080/src",
+          "path": "${workspaceFolder}/src"
+        }
+      ],
+      "suggestPathMappingWizard": false
     }
   ],
   "compounds": []

@@ -1,13 +1,20 @@
 <script lang="ts">
+  import { debounceTime } from "rxjs";
+
+  import SvelteSubject from "./SvelteSubject";
+
   export let name: string;
+
+  const value = new SvelteSubject("");
+  value.pipe(debounceTime(250)).subscribe((value) => {
+    console.log(value);
+  });
 </script>
 
 <main>
-  <h1>Hello {name}!</h1>
-  <p>
-    Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn
-    how to build Svelte apps.
-  </p>
+  <h1>{name}</h1>
+
+  <input bind:value={$value} />
 </main>
 
 <style>
