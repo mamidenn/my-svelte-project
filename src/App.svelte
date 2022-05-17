@@ -12,24 +12,33 @@
 
   export let name: string;
 
+  interface Track {
+    artistViewUrl: string;
+    artistName: string;
+    trackViewUrl: string;
+    trackName: string;
+  }
+
   const term = new SvelteSubject("");
   const tracks = term.pipe(
-    debounceTime(250),
+    debounceTime(350),
     switchMap((input) => {
       if (!input) return of([]);
       return fromFetch(`https://itunes.apple.com/search?term==${input}`).pipe(
-        switchMap((response) => {
-          if (response.ok) return response.json();
-          throw new Error(response.statusText);
-        }),
-        map((result) => result.results),
+        switchMap<Response, Promise<{ results: (Track & { kind: string })[] }>>(
+          (response) => {
+            if (response.ok) return response.json();
+            throw new Error(response.statusText);
+          }
+        ),
+        map((result) => result.results.filter((t) => t.kind === "song")),
         catchError((err: Error) => {
           console.error(err);
           return of([]);
         })
       );
     }),
-    startWith([])
+    startWith<Track[]>([])
   );
 </script>
 
