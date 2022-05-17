@@ -24,7 +24,7 @@
     debounceTime(350),
     switchMap((input) => {
       if (!input) return of([]);
-      return fromFetch(`https://itunes.apple.com/search?term==${input}`).pipe(
+      return fromFetch(`https://itunes.apple.com/search?term=${input}`).pipe(
         switchMap<Response, Promise<{ results: (Track & { kind: string })[] }>>(
           (response) => {
             if (response.ok) return response.json();
