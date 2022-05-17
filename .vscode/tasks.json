@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "dev",
+      "problemMatcher": [
+        {
+          "owner": "svelte",
+          "pattern": {
+            "regexp": "\\(!\\)"
+          },
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "bundles",
+            "endsPattern": "waiting for changes"
+          }
+        }
+      ],
+      "label": "npm: dev",
+      "detail": "rollup -c -w",
+      "isBackground": true
+    }
+  ]
+}
