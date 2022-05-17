@@ -1,20 +1,54 @@
 <script lang="ts">
-  import { debounceTime } from "rxjs";
-
-  import SvelteSubject from "./SvelteSubject";
+  import {
+    catchError,
+    debounceTime,
+    map,
+    of,
+    startWith,
+    switchMap,
+  } from "rxjs";
+  import { fromFetch } from "rxjs/fetch";
+  import { SvelteSubject } from "@modules";
 
   export let name: string;
 
-  const value = new SvelteSubject("");
-  value.pipe(debounceTime(250)).subscribe((value) => {
-    console.log(value);
-  });
+  const term = new SvelteSubject("");
+  const tracks = term.pipe(
+    debounceTime(250),
+    switchMap((input) => {
+      if (!input) return of([]);
+      return fromFetch(`https://itunes.apple.com/search?term==${input}`).pipe(
+        switchMap((response) => {
+          if (response.ok) return response.json();
+          throw new Error(response.statusText);
+        }),
+        map((result) => result.results),
+        catchError((err: Error) => {
+          console.error(err);
+          return of([]);
+        })
+      );
+    }),
+    startWith([])
+  );
 </script>
 
 <main>
   <h1>{name}</h1>
 
-  <input bind:value={$value} />
+  <input bind:value={$term} />
+  <table>
+    <thead>
+      <tr><th>Artist</th><th>Track</th></tr>
+    </thead>
+    {#each $tracks as track}
+      <tr
+        ><td><a href={track.artistViewUrl}>{track.artistName}</a></td><td>
+          <a href={track.trackViewUrl}>{track.trackName}</a></td
+        ></tr
+      >
+    {/each}
+  </table>
 </main>
 
 <style>
